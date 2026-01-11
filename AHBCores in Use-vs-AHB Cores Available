@@ -1,0 +1,83 @@
+#AHB Cores in Use vs. AHB Cores Available
+
+# Consumed AHB Cores (AHB Cores In Use)
+
+{
+  "id": "68398066-e44f-4b87-9927-4831fa978165",
+  "version": "KqlParameterItem/1.0",
+  "name": "ConsumedCores",
+  "label": "AHB Cores In Use",
+  "type": 1,
+  "query": "resources\n| where type =~ 'Microsoft.Compute/virtualMachines'\n| extend licenseType = tostring(properties.licenseType)\n| where licenseType in ('Windows_Server', 'Yes')\n| extend vmSize = tostring(properties.hardwareProfile.vmSize)\n| extend Cores = extract(@'^\\D*(\\d+)', 1, vmSize, typeof(int))\n| extend AHBcores = iff(Cores < 8, 8, Cores)\n| summarize ConsumedCores = sum(AHBcores)",
+  "crossComponentResources": [
+    {
+      "value": "all"
+    }
+  ],
+  "timeContext": {
+    "durationMs": 86400000
+  },
+  "queryType": 1,
+  "resourceType": "microsoft.resourcegraph/resources"
+}
+
+# Available AHB Cores (Calculated Field)
+
+{
+  "id": "3b03af15-7e74-4eee-83d7-d97aff338b52",
+  "version": "KqlParameterItem/1.0",
+  "name": "AvailableAHBCores",
+  "label": "AHB Cores Available",
+  "type": 1,
+  "criteriaData": [
+    {
+      "criteriaContext": {
+        "operator": "Default",
+        "resultValType": "expression",
+        "resultVal": "{AHBCores} - {ConsumedCores}"
+      }
+    }
+  ],
+  "style": "pills",
+  "queryType": 0,
+  "resourceType": "microsoft.resourcegraph/resources"
+}
+
+#AHB Entitlement Input Parameter
+
+{
+  "id": "90fdf506-ca5e-4fa4-80fd-fb6a3f5b8c61",
+  "version": "KqlParameterItem/1.0",
+  "name": "AHBCores",
+  "label": "AHB Entitlement",
+  "type": 1,
+  "description": "Enter the total number of cores which your Azure Hybrid Benefit entitlements allow.",
+  "isRequired": true,
+  "timeContext": {
+    "durationMs": 86400000
+  },
+  "value": "7244"
+}
+
+#Total VM Cores (All VMs)
+
+{
+  "id": "ce5df180-9d80-435-9dfc-3d402015a66e",
+  "version": "KqlParameterItem/1.0",
+  "name": "TotalCores",
+  "label": "Total VM Cores",
+  "type": 1,
+  "query": "resources\n| where type =~ 'Microsoft.Compute/virtualMachines'\n| extend vmSize = tostring(properties.hardwareProfile.vmSize)\n| extend Cores = extract(@'^\\D*(\\d+)', 1, vmSize, typeof(int))\n| summarize TotalCores = sum(Cores)",
+  "crossComponentResources": [
+    {
+      "value": "all"
+    }
+  ],
+  "timeContext": {
+    "durationMs": 86400000
+  },
+  "queryType": 1,
+  "resourceType": "microsoft.resourcegraph/resources"
+}
+
+
