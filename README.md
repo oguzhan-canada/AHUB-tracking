@@ -1,5 +1,7 @@
 # Azure Hybrid Benefit (AHB) Tracking Workbook
 
+![Azure Hybrid Benefit Tracking Dashboard](final-page-ahb.png)
+
 ## Overview
 
 This workbook provides a centralized and practical way to track Azure Hybrid Benefit (AHB) usage for Windows Server.
